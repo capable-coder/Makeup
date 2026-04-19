@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Glow Makeup Studio</title>
+<title>Beauty inside</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 
 <style>
@@ -31,8 +30,8 @@ width:100%;
 top:0;
 display:flex;
 justify-content:space-between;
-padding:20px 40px;
-background:rgba(0,0,0,0.4);
+padding:15px 40px;
+background:rgba(0,0,0,0.5);
 color:#fff;
 z-index:1000;
 backdrop-filter:blur(10px);
@@ -45,11 +44,17 @@ letter-spacing:2px;
 nav ul{
 display:flex;
 list-style:none;
-gap:20px;
+gap:25px;
 }
 
-nav ul li{
-cursor:pointer;
+nav ul li a{
+color:white;
+text-decoration:none;
+transition:0.3s;
+}
+
+nav ul li a:hover{
+color:#ff69b4;
 }
 
 /* HERO */
@@ -69,7 +74,7 @@ content:"";
 position:absolute;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.4);
+background:rgba(0,0,0,0.5);
 top:0;
 left:0;
 }
@@ -80,7 +85,7 @@ animation:fadeUp 1.5s ease;
 }
 
 .hero h1{
-font-size:60px;
+font-size:55px;
 letter-spacing:3px;
 }
 
@@ -89,8 +94,11 @@ margin:20px 0;
 font-size:18px;
 }
 
+/* BUTTON */
 .btn{
-padding:12px 30px;
+display:inline-block;
+padding:12px 25px;
+margin:10px;
 border:2px solid white;
 color:white;
 text-decoration:none;
@@ -126,7 +134,7 @@ background:#fff;
 box-shadow:0 5px 20px rgba(0,0,0,0.1);
 border-radius:10px;
 transition:0.4s;
-transform:translateY(50px);
+transform:translateY(60px);
 opacity:0;
 }
 
@@ -150,6 +158,7 @@ gap:15px;
 width:100%;
 border-radius:10px;
 transition:0.4s;
+cursor:pointer;
 }
 
 .gallery img:hover{
@@ -181,23 +190,31 @@ transform:translateY(0);
 
 <body>
 
+<!-- NAVBAR -->
 <nav>
 <h2>GLOW</h2>
 <ul>
-<li>Home</li>
-<li>Services</li>
-<li>Gallery</li>
+<li><a href="#">Home</a></li>
+<li><a href="#services">Services</a></li>
+<li><a href="#gallery">Gallery</a></li>
 </ul>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
 <div class="hero-content">
 <h1>CLASSY BRIDES</h1>
 <p>Beautiful and natural bridal makeup</p>
+
 <a href="#services" class="btn">Explore</a>
+
+<!-- WhatsApp Button -->
+<a href="https://wa.me/919522533230" class="btn">Book Now</a>
+
 </div>
 </section>
 
+<!-- SERVICES -->
 <section id="services">
 <h2 class="title">Our Services</h2>
 
@@ -210,7 +227,8 @@ transform:translateY(0);
 
 </section>
 
-<section>
+<!-- GALLERY -->
+<section id="gallery">
 <h2 class="title">Gallery</h2>
 
 <div class="gallery">
@@ -231,8 +249,8 @@ transform:translateY(0);
 /* SCROLL ANIMATION */
 let cards = document.querySelectorAll(".card");
 
-window.addEventListener("scroll", ()=>{
-let trigger = window.innerHeight * 0.8;
+function showCards(){
+let trigger = window.innerHeight * 0.85;
 
 cards.forEach(card=>{
 let top = card.getBoundingClientRect().top;
@@ -241,7 +259,10 @@ if(top < trigger){
 card.classList.add("show");
 }
 });
-});
+}
+
+window.addEventListener("scroll", showCards);
+window.addEventListener("load", showCards);
 
 </script>
 
