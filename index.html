@@ -190,6 +190,127 @@ text-align:center;
 padding:20px;
 }
 
+/* 🌟 GLASS EFFECT BASE */
+.glass{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+-webkit-backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.2);
+border-radius:15px;
+box-shadow:0 8px 32px rgba(0,0,0,0.2);
+}
+
+/* NAVBAR UPGRADE */
+nav{
+background:rgba(0,0,0,0.3);
+backdrop-filter:blur(12px);
+transition:0.3s;
+}
+
+/* HERO TEXT PREMIUM */
+.hero h1{
+font-size:60px;
+letter-spacing:4px;
+text-shadow:0 0 20px rgba(0,0,0,0.9);
+animation:fadeUp 1.2s ease;
+}
+
+.hero p{
+text-shadow:0 0 15px rgba(0,0,0,0.8);
+animation:fadeUp 1.6s ease;
+}
+
+/* BUTTON PREMIUM */
+.btn{
+border-radius:30px;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+transition:0.4s;
+}
+
+.btn:hover{
+background:#ff69b4;
+color:white;
+transform:scale(1.1);
+box-shadow:0 0 20px #ff69b4;
+}
+
+/* CARD GLASS STYLE */
+.card{
+background:rgba(255,255,255,0.2);
+backdrop-filter:blur(10px);
+border-radius:15px;
+border:1px solid rgba(255,255,255,0.2);
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+transition:0.5s;
+}
+
+.card:hover{
+transform:translateY(-10px) scale(1.05);
+box-shadow:0 15px 40px rgba(0,0,0,0.3);
+}
+
+/* GALLERY HOVER PREMIUM */
+.gallery img{
+transition:0.5s;
+}
+
+.gallery img:hover{
+transform:scale(1.15) rotate(2deg);
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* SECTION TITLE ANIMATION */
+.title{
+position:relative;
+animation:fadeUp 1s ease;
+}
+
+.title::after{
+content:"";
+width:60px;
+height:3px;
+background:#ff69b4;
+display:block;
+margin:10px auto;
+border-radius:10px;
+}
+
+/* SMOOTH SCROLL */
+html{
+scroll-behavior:smooth;
+}
+
+/* SCROLL FADE ANIMATION */
+.fade{
+opacity:0;
+transform:translateY(40px);
+transition:1s;
+}
+
+.fade.show{
+opacity:1;
+transform:translateY(0);
+}
+
+/* FOOTER UPGRADE */
+footer{
+background:rgba(0,0,0,0.9);
+backdrop-filter:blur(10px);
+}
+
+/* KEYFRAME */
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(50px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
 /* ANIMATION */
 @keyframes fadeUp{
 from{
@@ -315,6 +436,25 @@ Book on WhatsApp
 </footer>
 
 <script>
+
+
+let elements = document.querySelectorAll(".card, .gallery img, .title");
+
+function reveal(){
+let trigger = window.innerHeight * 0.85;
+
+elements.forEach(el=>{
+let top = el.getBoundingClientRect().top;
+
+if(top < trigger){
+el.classList.add("show");
+}
+});
+}
+
+window.addEventListener("scroll", reveal);
+window.addEventListener("load", reveal);
+
 
 /* SCROLL ANIMATION */
 let cards = document.querySelectorAll(".card");
