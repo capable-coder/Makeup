@@ -272,7 +272,7 @@
             <ol>
                 <li>Tap Pay — your PhonePe/GPay/Paytm app will open.</li>
                 <li>Complete the payment securely inside your app.</li>
-                <li>Leena Bot will activate your plan within 10 minutes.</li>
+                <li>Leena Bot will activate your plan within 2 minutes.</li>
             </ol>
         </div>
     </div>
@@ -313,6 +313,11 @@
                 return;
             }
 
+            // Button text change loading style
+            let btn = document.querySelector('.pay-btn');
+            btn.innerHTML = "Opening UPI App... ⏳";
+            btn.style.opacity = "0.7";
+
             // ==========================================
             // 🛑 APNI DETAILS YAHAN UPDATE KAREIN 🛑
             // ==========================================
@@ -323,20 +328,15 @@
             let ref_id = `LEENA-${planName.replace(" ", "")}-${uid}`;
             let upi_link = `upi://pay?pa=${upi_id}&pn=${encodeURIComponent(payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(ref_id)}`;
 
-            // Alert dikhao aur jab user 'Close' dabaye tab UPI app kholo
-            Telegram.WebApp.showAlert(`Payment Initiated!\nPlan: ${planName}\nAmount: ₹${amount}\n\nPlease complete the payment in your UPI app.`, function() {
-                
-                // 🚀 OFFICIAL TELEGRAM METHOD TO OPEN EXTERNAL APPS 🚀
-                try {
-                    Telegram.WebApp.openLink(upi_link);
-                } catch (e) {
-                    window.location.href = upi_link;
-                }
-                
-            });
+            // 🚀 INSTANT DIRECT TRIGGER (Bina kisi Alert ke) 🚀
+            window.location.href = upi_link;
+
+            // 2 Second baad Telegram Web App ko automatically close kar denge
+            setTimeout(() => {
+                Telegram.WebApp.close();
+            }, 2500);
         }
     </script>
 
 </body>
 </html>
-
