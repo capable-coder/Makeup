@@ -272,7 +272,7 @@
             <ol>
                 <li>Tap Pay — your PhonePe/GPay/Paytm app will open.</li>
                 <li>Complete the payment securely inside your app.</li>
-                <li>Leena Bot will activate your plan within 2 minutes.</li>
+                <li>Leena Bot will activate your plan within 10 minutes.</li>
             </ol>
         </div>
     </div>
@@ -282,9 +282,9 @@
         let amount = 20;
         let planName = "1 Week";
         
-        // Telegram Web App Initialization & Get UID
+        // Telegram Web App Initialization
         Telegram.WebApp.ready();
-        Telegram.WebApp.expand(); // Opens webapp in full height
+        Telegram.WebApp.expand(); 
 
         const urlParams = new URLSearchParams(window.location.search);
         let tg_uid = urlParams.get('uid') || (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user ? Telegram.WebApp.initDataUnsafe.user.id : "");
@@ -295,12 +295,9 @@
             amount = amt;
             planName = name;
             
-            // Remove active class from all
             document.querySelectorAll('.plan-card').forEach(el => el.classList.remove('active'));
-            // Add active class to clicked element
             element.classList.add('active');
 
-            // Update Total text
             document.getElementById('selected-plan-text').innerText = `Total due (${name})`;
             document.getElementById('total-amount').innerText = `₹${amt}`;
         }
@@ -313,30 +310,40 @@
                 return;
             }
 
-            // Button text change loading style
             let btn = document.querySelector('.pay-btn');
             btn.innerHTML = "Opening UPI App... ⏳";
             btn.style.opacity = "0.7";
 
             // ==========================================
-            // 🛑 APNI DETAILS YAHAN UPDATE KAREIN 🛑
+            // 🛑 APNI DETAILS
             // ==========================================
-            let upi_id = "sg7741452-1@okhdfcbank"; // Apna UPI id daalein
-            let payee_name = "Leena Bot";   // Apna naam daalein
+            let upi_id = "sg7741452-1@okhdfcbank"; 
+            let payee_name = "Leena Bot";   
             // ==========================================
 
             let ref_id = `LEENA-${planName.replace(" ", "")}-${uid}`;
             let upi_link = `upi://pay?pa=${upi_id}&pn=${encodeURIComponent(payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(ref_id)}`;
 
-            // 🚀 INSTANT DIRECT TRIGGER (Bina kisi Alert ke) 🚀
-            window.location.href = upi_link;
+            // 🚀 THE ULTIMATE FIX 🚀
+            // Telegram.WebApp.openLink forces the OS to handle the URL, bypassing the WebView restrictions.
+            try {
+                Telegram.WebApp.openLink(upi_link);
+            } catch (err) {
+                // Fallback for older devices
+                let a = document.createElement('a');
+                a.href = upi_link;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+            }
 
-            // 2 Second baad Telegram Web App ko automatically close kar denge
+            // Web App ko close kar do taaki payment complete hone ke baad user wapas chat me aaye
             setTimeout(() => {
                 Telegram.WebApp.close();
-            }, 2500);
+            }, 3000);
         }
     </script>
 
 </body>
 </html>
+
