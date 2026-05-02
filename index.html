@@ -316,20 +316,24 @@
             // ==========================================
             // 🛑 APNI DETAILS YAHAN UPDATE KAREIN 🛑
             // ==========================================
-            let upi_id = "sg7741452-1@okhdfcbank"; // E.g., 9325382320@fam
-            let payee_name = "Leena Bot";   // E.g., Swami Sitaram Sonawale
+            let upi_id = "sg7741452-1@okhdfcbank"; // Apna UPI id daalein
+            let payee_name = "Leena Bot";   // Apna naam daalein
             // ==========================================
 
             let ref_id = `LEENA-${planName.replace(" ", "")}-${uid}`;
-            let upi_link = `upi://pay?pa=${upi_id}&pn=${payee_name}&am=${amount}&cu=INR&tn=${ref_id}`;
+            let upi_link = `upi://pay?pa=${upi_id}&pn=${encodeURIComponent(payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(ref_id)}`;
 
-            // Show alert in Telegram before redirecting
-            Telegram.WebApp.showAlert(`Payment Initiated!\nPlan: ${planName}\nAmount: ₹${amount}\n\nPlease complete the payment in your UPI app.`);
-
-            // Redirect to UPI App
-            setTimeout(() => {
-                window.location.href = upi_link;
-            }, 500);
+            // Alert dikhao aur jab user 'Close' dabaye tab UPI app kholo
+            Telegram.WebApp.showAlert(`Payment Initiated!\nPlan: ${planName}\nAmount: ₹${amount}\n\nPlease complete the payment in your UPI app.`, function() {
+                
+                // 🚀 OFFICIAL TELEGRAM METHOD TO OPEN EXTERNAL APPS 🚀
+                try {
+                    Telegram.WebApp.openLink(upi_link);
+                } catch (e) {
+                    window.location.href = upi_link;
+                }
+                
+            });
         }
     </script>
 
