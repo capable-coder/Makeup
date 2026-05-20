@@ -272,7 +272,8 @@
             <ol>
                 <li>Tap Pay — your PhonePe/GPay/Paytm app will open.</li>
                 <li>Complete the payment securely inside your app.</li>
-                <li>Leena Bot will activate your plan within 10 minutes.</li>
+                <li>Send the payment screenshot to the Bot Admin.</li>
+                <li>Leena Bot will activate your plan soon!</li>
             </ol>
         </div>
     </div>
@@ -321,25 +322,24 @@
             let payee_name = "Leena Bot";   
             // ==========================================
 
-            let ref_id = `LEENA-${planName.replace(" ", "")}-${uid}`;
+            let cleanPlanName = planName.replace(/\s+/g, '');
+            let ref_id = `LEENA-${cleanPlanName}-${uid}`;
+            
+            // Build Standard UPI URI
             let upi_link = `upi://pay?pa=${upi_id}&pn=${encodeURIComponent(payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(ref_id)}`;
 
-            // 🚀 THE ULTIMATE FIX 🚀
-            // Telegram.WebApp.openLink forces the OS to handle the URL, bypassing the WebView restrictions.
             try {
-                Telegram.WebApp.openLink(upi_link);
+                // Telegram Web App API method - using try_instant_view: false to force external app opening
+                Telegram.WebApp.openLink(upi_link, { try_instant_view: false });
             } catch (err) {
-                // Fallback for older devices
-                let a = document.createElement('a');
-                a.href = upi_link;
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
+                // Hard Fallback directly via window location
+                window.location.href = upi_link;
             }
 
-            // Web App ko close kar do taaki payment complete hone ke baad user wapas chat me aaye
+            // Reset button after 3 seconds in case the app doesn't switch properly
             setTimeout(() => {
-                Telegram.WebApp.close();
+                btn.innerHTML = "PAY WITH ANY UPI ➔";
+                btn.style.opacity = "1";
             }, 3000);
         }
     </script>
