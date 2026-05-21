@@ -7,6 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
@@ -159,25 +160,40 @@
             text-transform: uppercase;
         }
 
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .pay-btn {
             width: 100%;
             background: linear-gradient(135deg, #e94560, #c81d77);
             color: white;
             border: none;
-            padding: 18px;
+            padding: 16px;
             border-radius: 14px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
             box-shadow: 0 8px 20px rgba(233, 69, 96, 0.3);
         }
 
-        .pay-btn:active {
+        .qr-btn {
+            width: 100%;
+            background: transparent;
+            color: #e94560;
+            border: 2px solid #e94560;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .qr-btn:active, .pay-btn:active {
             transform: scale(0.96);
         }
 
@@ -210,6 +226,27 @@
         .instructions ol {
             padding-left: 15px;
             margin-top: 5px;
+        }
+
+        #qr-section {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        #qr-section p {
+            color: #0a0a0f;
+            font-size: 12px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -263,15 +300,21 @@
             <strong id="total-amount">₹39</strong>
         </div>
 
-        <button class="pay-btn" onclick="payNow()">
-            PAY WITH ANY UPI ➔
-        </button>
+        <div class="btn-group">
+            <button class="pay-btn" onclick="payNow()">PAY VIA UPI APP ➔</button>
+            <button class="qr-btn" onclick="showQR()">APP FAILED? SHOW QR CODE</button>
+        </div>
+
+        <div id="qr-section">
+            <div id="qrcode"></div>
+            <p>Take a screenshot & scan via gallery</p>
+        </div>
 
         <div class="instructions">
             <strong>How it works:</strong>
             <ol>
-                <li>Tap Pay — your PhonePe/GPay/Paytm app will open.</li>
-                <li>Complete the payment securely inside your app.</li>
+                <li>Tap Pay to open your UPI app.</li>
+                <li>If the app restricts payment, generate the QR code, take a screenshot, and scan it inside PhonePe/GPay.</li>
                 <li>Send the payment screenshot to the Bot Admin.</li>
                 <li>Leena Bot will activate your plan soon!</li>
             </ol>
@@ -283,7 +326,13 @@
         let amount = 39;
         let planName = "1 Week";
         
-        // Telegram Web App Initialization
+        // ==========================================
+        // 🛑 BHARATPE MERCHANT ID UPDATED HERE
+        // ==========================================
+        let upi_id = "BHARATPE2H0H0Q2W7F87590@unitype"; 
+        let payee_name = "Leena Bot";   
+        // ==========================================
+
         Telegram.WebApp.ready();
         Telegram.WebApp.expand(); 
 
@@ -291,7 +340,6 @@
         let tg_uid = urlParams.get('uid') || (Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user ? Telegram.WebApp.initDataUnsafe.user.id : "");
         document.getElementById('userid').value = tg_uid;
 
-        // UI Update for Plan Selection
         function selectPlan(amt, name, element) {
             amount = amt;
             planName = name;
@@ -301,9 +349,18 @@
 
             document.getElementById('selected-plan-text').innerText = `Total due (${name})`;
             document.getElementById('total-amount').innerText = `₹${amt}`;
+            
+            // Hide QR if plan changes
+            document.getElementById('qr-section').style.display = 'none';
         }
 
-        // Payment Processing
+        function getUpiLink() {
+            let uid = document.getElementById('userid').value || "NoID";
+            let cleanPlanName = planName.replace(/\s+/g, '');
+            let ref_id = `LEENA-${cleanPlanName}-${uid}`;
+            return `upi://pay?pa=${upi_id}&pn=${encodeURIComponent(payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(ref_id)}`;
+        }
+
         function payNow() {
             let uid = document.getElementById('userid').value;
             if(!uid) {
@@ -313,26 +370,12 @@
 
             let btn = document.querySelector('.pay-btn');
             btn.innerHTML = "Opening UPI App... ⏳";
-            btn.style.opacity = "0.7";
-
-            // ==========================================
-            // 🛑 APNI DETAILS
-            // ==========================================
-            let upi_id = "sg7741452-1@okhdfcbank"; 
-            let payee_name = "Leena Bot";   
-            // ==========================================
-
-            let cleanPlanName = planName.replace(/\s+/g, '');
-            let ref_id = `LEENA-${cleanPlanName}-${uid}`;
             
-            // Build Standard UPI URI
-            let upi_link = `upi://pay?pa=${upi_id}&pn=${encodeURIComponent(payee_name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(ref_id)}`;
+            let upi_link = getUpiLink();
 
-            // 🚀 THE FIX: Sirf Telegram ka internal method aur invisible link fallback
             if (Telegram.WebApp.isVersionAtLeast("6.1")) {
                 Telegram.WebApp.openLink(upi_link);
             } else {
-                // Purane devices ke liye invisible button trigger (No crash)
                 let a = document.createElement('a');
                 a.href = upi_link;
                 a.target = '_blank';
@@ -341,11 +384,38 @@
                 document.body.removeChild(a);
             }
 
-            // Reset button after 3 seconds in case the app doesn't switch properly
             setTimeout(() => {
-                btn.innerHTML = "PAY WITH ANY UPI ➔";
-                btn.style.opacity = "1";
+                btn.innerHTML = "PAY VIA UPI APP ➔";
             }, 3000);
+        }
+
+        function showQR() {
+            let uid = document.getElementById('userid').value;
+            if(!uid) {
+                Telegram.WebApp.showAlert("⚠️ Please enter your Telegram User ID first!");
+                return;
+            }
+
+            let qrSection = document.getElementById('qr-section');
+            let qrContainer = document.getElementById('qrcode');
+            
+            // Clear previous QR
+            qrContainer.innerHTML = "";
+            
+            // Generate new QR
+            new QRCode(qrContainer, {
+                text: getUpiLink(),
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            qrSection.style.display = 'block';
+            
+            // Scroll to QR
+            qrSection.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 
